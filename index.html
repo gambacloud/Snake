@@ -3,118 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile First Snake Game</title>
+    <title>Snake Game</title>
     <style>
-        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
-        canvas { border: 1px solid black; }
+        #debugLogs {
+            display: none;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        #toggleDebug {
+            margin-top: 10px;
+        }
     </style>
+    <script>
+        var debugVisible = false;
+        function toggleDebug() {
+            debugVisible = !debugVisible;
+            document.getElementById('debugLogs').style.display = debugVisible ? 'block' : 'none';
+        }
+
+        function updateDebugLogs(direction, headPos, foodPos, gameState, inputs) {
+            const logContent = `Direction: ${direction}\nSnake Head Position: ${headPos}\nFood Position: ${foodPos}\nGame State: ${gameState}\nInputs: ${inputs}`;
+            document.getElementById('debugLogs').innerText = logContent;
+        }
+    </script>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <h1>Snake Game</h1>
+    <button id="toggleDebug" onclick="toggleDebug()">Show/Hide Debug Logs</button>
+    <div id="debugLogs"></div>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let gameInterval;
-        let snake = [{x: 10, y: 10}];
-        let direction = {x: 0, y: 0};
-        let food = {x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20)};
-        let score = 0;
-        let isPaused = false;
-        const difficultyLevels = {easy: 200, medium: 100, hard: 50};
-        let currentDifficulty = difficultyLevels.medium;
-
-        function startGame() {
-            canvas.width = window.innerWidth * 0.8;
-            canvas.height = window.innerHeight * 0.8;
-            document.addEventListener('touchstart', handleTouchStart);
-            document.addEventListener('touchmove', handleTouchMove);
-            gameInterval = setInterval(gameLoop, currentDifficulty);
-        }
-
-        function gameLoop() {
-            if(isPaused) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawSnake();
-            drawFood();
-            moveSnake();
-            checkCollisions();
-        }
-
-        function drawSnake() {
-            ctx.fillStyle = 'green';
-            for (let segment of snake) {
-                ctx.fillRect(segment.x * 20, segment.y * 20, 18, 18);
-            }
-        }
-
-        function drawFood() {
-            ctx.fillStyle = 'red';
-            ctx.fillRect(food.x * 20, food.y * 20, 18, 18);
-        }
-
-        function moveSnake() {
-            const head = {x: snake[0].x + direction.x, y: snake[0].y + direction.y};
-            snake.unshift(head);
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                food = {x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20)};
-            } else {
-                snake.pop();
-            }
-        }
-
-        function checkCollisions() {
-            const head = snake[0];
-            if (head.x < 0 || head.x >= canvas.width / 20 || head.y < 0 || head.y >= canvas.height / 20) {
-                alert('Game Over! Your score: ' + score);
-                clearInterval(gameInterval);
-            }
-            for (let i = 1; i < snake.length; i++) {
-                if (snake[i].x === head.x && snake[i].y === head.y) {
-                    alert('Game Over! Your score: ' + score);
-                    clearInterval(gameInterval);
-                }
-            }
-        }
-
-        function handleTouchStart(event) {
-            const touch = event.touches[0];
-            const x = touch.clientX;
-            const y = touch.clientY;
-            const canvasRect = canvas.getBoundingClientRect();
-            const centerX = canvasRect.left + canvasRect.width / 2;
-            const centerY = canvasRect.top + canvasRect.height / 2;
-
-            if (x < centerX) {
-                direction = {x: -1, y: 0};
-            } else {
-                direction = {x: 1, y: 0};
-            }
-            if (y < centerY) {
-                direction.y = direction.y === 0 ? -1 : direction.y;
-            } else {
-                direction.y = direction.y === 0 ? 1 : direction.y;
-            }
-        }
-
-        function handleTouchMove(event) {
-            event.preventDefault();  // Prevent scrolling 
-        }
-
-        function togglePause() {
-            isPaused = !isPaused;
-            if (!isPaused) {
-                gameInterval = setInterval(gameLoop, currentDifficulty);
-            } else {
-                clearInterval(gameInterval);
-            }
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'p') togglePause();
-        });
-
-        window.onload = startGame;
+        // Example of how to call updateDebugLogs
+        // You can replace these values with actual game state variables
+        updateDebugLogs('UP', {x: 5, y: 5}, {x: 10, y: 10}, 'RUNNING', 'Arrow Up');
     </script>
 </body>
 </html>
